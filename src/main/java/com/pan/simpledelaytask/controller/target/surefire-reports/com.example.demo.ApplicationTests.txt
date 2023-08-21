@@ -1,9 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.example.demo.ApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 5.201 s <<< FAILURE! - in com.example.demo.ApplicationTests
-contextLoads  Time elapsed: 0.009 s  <<< ERROR!
-java.lang.IllegalStateException: Failed to load ApplicationContext
-Caused by: java.lang.IllegalStateException: Unable to read meta-data for class com.syc.xxljob.autoconfigure.XxlJobAutoConfiguration
-Caused by: java.io.FileNotFoundException: class path resource [com/syc/xxljob/autoconfigure/XxlJobAutoConfiguration.class] cannot be opened because it does not exist
-
