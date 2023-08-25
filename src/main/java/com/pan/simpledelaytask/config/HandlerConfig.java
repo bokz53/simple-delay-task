@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import com.pan.simpledelaytask.TaskHandler;
+import com.pan.simpledelaytask.abstracts.TaskHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

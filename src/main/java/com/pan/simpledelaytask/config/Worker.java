@@ -1,10 +1,15 @@
 package com.pan.simpledelaytask.config;
 
 
-import com.pan.simpledelaytask.TaskHandler;
+import com.pan.simpledelaytask.abstracts.ExecutorSupplier;
+import com.pan.simpledelaytask.bean.ExecuteTime;
 import com.pan.simpledelaytask.bean.TaskParam;
+import com.pan.simpledelaytask.abstracts.TaskHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -20,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Worker {
 
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     public static final String LUA = "";
     public static final String TASK_QUEUE_NAME = "SDT-delay-task:queue";
     public static final String TASK_DETAIL_PREFIX = "SDT-delay-task:detail:";
@@ -31,17 +38,17 @@ public class Worker {
     @Autowired
     private HandlerConfig handlerConfig;
 
-    // todo 自定义线程池
     @Autowired
-    private ExecutorService executorService;
+    private ExecutorSupplier executorSupplier;
 
     @PostConstruct
     public void init() {
-
         this.startTaskPoll();
     }
 
     private void startTaskPoll() {
+        ExecutorService executorService = executorSupplier.getExecutor();
+
         executorService.submit(() -> {
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -66,15 +73,14 @@ public class Worker {
 				taskParam = OBJECT_MAPPER.readValue(detail, TaskParam.class);
 
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+                log.error("taskParam parsing error!", e);
 			}
 
             // 自定义处理器
             List<TaskHandler> handlers = handlerConfig.getByType(taskParam.getType());
 
             if (null == handlers || handlers.isEmpty()) {
-                // log.warn("can not find handlers");
+                log.warn("can not find handlers. TaskId : {} is done.", taskId);
             }
 
             final TaskParam fTask = taskParam;
@@ -86,7 +92,37 @@ public class Worker {
 
         });
 
+    }
 
+    public String addTask(TaskParam taskParam, ExecuteTime executeTime) {
+        return addTask(taskParam, executeTime, null);
+    }
+
+    public String addTask(TaskParam taskParam, ExecuteTime executeTime, String taskId) {
+        if (null == taskId || taskId.isEmpty()) {
+            taskId = randomTaskId();
+            log.info("taskId is null ,'{}' is generated as taskId.", taskId);
+        }
+
+        String json = null;
+        try {
+			json = OBJECT_MAPPER.writeValueAsString(taskParam);
+		} catch (JsonProcessingException e) {
+            log.error("convert param to json error", e);
+            throw new IllegalArgumentException("convert param to json error", e);
+		}
+
+        long exeTime = executeTime.getRealExecuteTime(System.currentTimeMillis());
+        
+        redisTemplate.opsForValue().set(TASK_DETAIL_PREFIX + taskId, json);
+        redisTemplate.opsForZSet().add(TASK_QUEUE_NAME, taskId, exeTime);
+        return taskId;
+    }
+
+
+    public String randomTaskId() {
+        // todo 
+        return "";
     }
 
 
