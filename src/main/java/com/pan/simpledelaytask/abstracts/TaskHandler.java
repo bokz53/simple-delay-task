@@ -7,10 +7,10 @@ import com.pan.simpledelaytask.bean.TaskParam;
 public abstract class TaskHandler {
 
     public void processTask(TaskParam taskParam) {
-        this.doProcesse(taskParam);
+        this.doProcess(taskParam);
     }
 
-	public abstract void doProcesse(TaskParam taskParam);
+	public abstract void doProcess(TaskParam taskParam);
 
     public abstract List<String> getTargetType();
 }
