@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Component
+//@Component
 public class Worker {
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -84,12 +83,15 @@ public class Worker {
             }
 
             final TaskParam fTask = taskParam;
-            for (TaskHandler handler : handlers) {
-                executorService.submit(() -> {
-                    handler.pocesseTask(fTask);
-                });
+
+            if (null == handlers || handlers.isEmpty()) {
+                log.warn("Can not get any taskHandler, your task will not be executed. TaskParam: {}", taskParam);
+                return;
             }
 
+            for (TaskHandler handler : handlers) {
+                executorService.submit(() -> handler.processTask(fTask));
+            }
         });
 
     }

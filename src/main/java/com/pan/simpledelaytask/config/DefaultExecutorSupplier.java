@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnMissingBean(value = ExecutorSupplier.class)
+@ConditionalOnMissingBean(value = ExecutorSupplier.class, ignored = DefaultExecutorSupplier.class)
 public class DefaultExecutorSupplier implements ExecutorSupplier {
 
 

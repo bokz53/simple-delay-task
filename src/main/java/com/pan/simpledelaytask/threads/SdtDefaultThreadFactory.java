@@ -5,11 +5,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SdtDefaultThreadFactory implements ThreadFactory {
 
-    public static final SdtDefaultThreadFactory INSTANCE = new SdtDefaultThreadFactory();
 
     private static final AtomicInteger poolNumber = new AtomicInteger(1);
     private final AtomicInteger threadNumber = new AtomicInteger(1);
     private final String namePrefix;
+
+    public static final SdtDefaultThreadFactory INSTANCE = new SdtDefaultThreadFactory();
 
     SdtDefaultThreadFactory() {
         namePrefix = "SDT-" +

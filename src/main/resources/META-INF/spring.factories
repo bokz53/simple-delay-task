@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-    com.syc.xxljob.autoconfigure.XxlJobAutoConfiguration
+    com.pan.simpledelaytask.config.HandlerConfig

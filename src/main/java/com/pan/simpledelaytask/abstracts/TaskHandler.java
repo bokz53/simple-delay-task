@@ -6,7 +6,7 @@ import com.pan.simpledelaytask.bean.TaskParam;
 
 public abstract class TaskHandler {
 
-    public void pocesseTask(TaskParam taskParam) {
+    public void processTask(TaskParam taskParam) {
         this.doProcesse(taskParam);
     }
 
